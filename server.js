@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 
 //router imports
 const userRoutes = require("./routes/UserRoute");
@@ -7,6 +8,7 @@ const todoRoutes = require("./routes/TaskRoute");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/users", userRoutes);

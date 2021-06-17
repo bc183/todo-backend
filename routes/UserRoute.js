@@ -74,7 +74,7 @@ const register = async (req, res) => {
         errors.password = "Password cannot be empty";
     }
     if (password != confirmPassword) {
-        errors.confirmPassword = "Password and confirm password does not match."
+        errors.error = "Password and confirm password does not match."
     }
 
     try {

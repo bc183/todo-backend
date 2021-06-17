@@ -7,9 +7,28 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 
-// const getTodosBasedOnUser = async (req, res) => {
-//     const userId
-// }
+const getTodosBasedOnUser = async (req, res) => {
+    const user = res.locals.user;
+
+    try {
+        const todos = await Todo.find({ userId: user._id });
+        let resp = {};
+        let completedTodos = [];
+        let nonCompletedTodos = [];
+        todos.forEach((todo) => {
+            if (todo.isCompleted) {
+                completedTodos.push(todo)
+            } else {
+                nonCompletedTodos.push(todo);
+            }
+        });
+        resp.completed = completedTodos;
+        resp.notCompleted = nonCompletedTodos;
+        return res.status(200).json(resp);
+    } catch (error) {
+        return res.status(500).json({ error: "Something went wrong." });
+    }
+}
 
 const addTodo = async (req, res) => {
     const { title, description} = req.body;
@@ -89,7 +108,23 @@ const updateTodo = async (req, res) => {
 
 }
 
+const deleteTodo = async (req, res) => {
+    const todoId = req.params.todoId;
+    
+    try {
+        const deletedTodo = await Todo.deleteOne({ _id: todoId });
+        res.status(200).json(deleteTodo);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Something went wrong");
+    }
+    
+}
+
+router.get("", auth, getTodosBasedOnUser);
 router.post("/add", auth,addTodo);
 router.put("/update", auth,updateTodo);
+router.delete("/delete/:todoId", auth,deleteTodo);
+
 
 module.exports = router;
